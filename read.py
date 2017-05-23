@@ -5,6 +5,8 @@ import os
 import glob
 import csv
 import re
+import textract
+import json
 from indexer import *
 
 
@@ -25,45 +27,24 @@ os.chdir("./data")
 #		for i in range(n):
 #			print pdf.getPage(i).extractText().encode("utf8")
 
-dict={"aplle":"a"}
+class init(dict):
+	def __missing__(self,key):
+		return []
+
+dict=init()
 
 for root,directories,filenames in os.walk("."):
-	for directory in directories:
-		print os.path.join(root,directory)
 	for filename in filenames:
 		cstr=''
 		file= os.path.join(root,filename)
-		if file.endswith(".pdf"):
-			f=open(file,"rb")
-			pdf=PyPDF2.PdfFileReader(f)
-			n=pdf.numPages
-			for i in range(n):
-				t= pdf.getPage(i).extractText().encode("ascii","ignore").split()
-				cstr+=' '.join(t)
-		elif file.endswith(".docx"):
-			doc = docx.Document(file)
-			n=len(doc.paragraphs)
-			for i in range(n):
-				cstr+= doc.paragraphs[i].text
-		elif file.endswith(".csv"):
-			f=open(file)
-			reader=csv.reader(f)
-			for row in reader:
-				cstr+=' '.join(row)
-				
-		elif file.endswith(".txt"):
-			cstr+= open(file,"r").read()
-		elif file.endswith(".c"):
-			cstr+= open(file,"r").read()
-		elif file.endswith(".cpp"):
-			cstr+= open(file,"r").read()	
-		elif file.endswith(".py"):
-			cstr+= open(file,"r").read()
+		cstr+=textract.process(file, encoding='ascii')
+
 		if len(cstr)!=0:
 			# Call the indexing function
-			
-			index(cstr)
+			index(cstr,file,dict)
 			cstr=''
+
+json.dump(dict,open("../database.txt","w"))
 
 
 

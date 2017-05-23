@@ -1,9 +1,15 @@
 #! /usr/local/bin/python3
 import math
-def index(str):
-	print str;
-	list=str.split();
+import re
+
+
+
+def index(str,file,dict):
+	print file
+	list=re.split(r'[ ;:_.,/\*\\\-<>@\(\)\n0-9$]',str)
+	list=filter(None,list)
+	#print list
 	for i in list:
-		t=i.split()
-		for x in t:
-			print x
+		print i
+		
+		dict[i]=dict[i]+[file]

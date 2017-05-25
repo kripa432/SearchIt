@@ -9,41 +9,30 @@ import textract
 import json
 from indexer import *
 
+os.chdir("./data") #change the current working directory
 
-#sample for extracting text from first page of file
-#f=open("../data/gandhinagar.pdf","rb")
-#print PyPDF2.PdfFileReader(f).getPage(0).extractText()
-
-
-os.chdir("./data")
-
-#pdffiles=[]
-#for file in os.listdir('../data/'):
-#	if file.endswith(".pdf"):
-#		pdffiles+=[file]
-#		f=open("../data/"+file,"rb")
-#		pdf=PyPDF2.PdfFileReader(f)
-#		n=pdf.numPages
-#		for i in range(n):
-#			print pdf.getPage(i).extractText().encode("utf8")
 
 class init(dict):
 	def __missing__(self,key):
 		return []
 
 dict=init()
-
+#crawling the directories and sub directories for files
 for root,directories,filenames in os.walk("."):
+	# os.walk returns 3-tuple (directory path, dirctory names, filenames)
 	for filename in filenames:
+		#compiled string to be generated to be passed to indexer
 		cstr=''
+		#obtaining full path of file
 		file= os.path.join(root,filename)
+		#extracting of the file using textract library function
 		cstr+=textract.process(file, encoding='ascii')
 
 		if len(cstr)!=0:
-			# Call the indexing function
+			# Calling  the indexing function
 			index(cstr,file,dict)
 			cstr=''
-
+#dumping the data of dictionary to a database file
 json.dump(dict,open("../database.txt","w"))
 
 

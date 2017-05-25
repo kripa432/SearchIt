@@ -4,16 +4,18 @@ import os
 import webbrowser
 dict=json.load(open("database.txt"))
 
+#changing to indexed directory
 os.chdir("./data")
-
 
 query=raw_input().split()
 lis=[]
+
 for i in query:
 	try:
 		lis+=dict[i]
 	except:
 		pass
+
 c=1;
 for i in lis:
 	print str(c)+' '+str(i)
